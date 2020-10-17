@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HLTBLogger.Android", "HLTBLogger\HLTBLogger.Android\HLTBLogger.Android.csproj", "{FBBA1415-F4D4-45C4-AF8D-BEEDA60ED682}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HLTBLogger", "HLTBLogger\HLTBLogger\HLTBLogger.csproj", "{D6B48902-9E29-4ABC-95CB-B5BC49B4BE01}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FBBA1415-F4D4-45C4-AF8D-BEEDA60ED682}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBBA1415-F4D4-45C4-AF8D-BEEDA60ED682}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBBA1415-F4D4-45C4-AF8D-BEEDA60ED682}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{FBBA1415-F4D4-45C4-AF8D-BEEDA60ED682}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBBA1415-F4D4-45C4-AF8D-BEEDA60ED682}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBBA1415-F4D4-45C4-AF8D-BEEDA60ED682}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{D6B48902-9E29-4ABC-95CB-B5BC49B4BE01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6B48902-9E29-4ABC-95CB-B5BC49B4BE01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6B48902-9E29-4ABC-95CB-B5BC49B4BE01}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{D6B48902-9E29-4ABC-95CB-B5BC49B4BE01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6B48902-9E29-4ABC-95CB-B5BC49B4BE01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6B48902-9E29-4ABC-95CB-B5BC49B4BE01}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BFA3BE38-B446-4FEA-9388-CB27648A780D}
+	EndGlobalSection
+EndGlobal
