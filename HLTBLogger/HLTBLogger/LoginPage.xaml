@@ -13,9 +13,12 @@
                            PlaceholderColor="White" HeightRequest="40"   
                            IsPassword="True"  
                            TextColor="White"/>
+                    <Label x:Name="ErrMsg" Text="An error occurred."
+                           TextColor="Red"
+                           IsVisible="False"></Label>
                 </StackLayout>
             </Frame>
-            <Button Command="{Binding SubmitCommand}" Text="Login" TextColor="White"  
+            <Button x:Name="BtnLogin" Command="{Binding SubmitCommand}" Text="Login" TextColor="White"  
                     FontAttributes="Bold" FontSize="Large" HorizontalOptions="FillAndExpand"  
                     BackgroundColor="#088da5" Clicked="OnLoginButtonClicked"/>
         </StackLayout>

@@ -15,40 +15,29 @@ namespace HLTBLogger
 {
     public partial class MainPage : ContentPage
     {
-        public IEnumerable<GameInfoModel> CurrentGames { get; private set; }
-
-        public MainPage(string username)
+        public MainPage()
         {
             InitializeComponent();
 
-            initializeGamesList(username);
-
-            BindingContext = this;
+            initializeGamesList();
         }
 
-        private void initializeGamesList(string username)
+        private async void initializeGamesList()
         {
-            var client = new HttpClient();
-            var data = new Dictionary<string, string>();
-            data["n"] = username;
-            data["playing"] = "1";
+            var HLTBClient = (App.Current as HLTBLogger.App).HLTBClient;
 
-            var body = new System.Net.Http.FormUrlEncodedContent(data);
+            if (!HLTBClient.IsLoggedIn)
+            {
+                await HLTBClient.Login();
 
-            var response = client.PostAsync("https://howlongtobeat.com/user_games_list", body).Result;
-            var content = response.Content.ReadAsStringAsync().Result;
+                if (!HLTBClient.IsLoggedIn)
+                {
+                    Navigation.InsertPageBefore(new LoginPage(true), this);
+                    await Navigation.PopAsync();
+                }
+            }
 
-            var doc = new HtmlDocument();
-            doc.LoadHtml(content);
-
-            CurrentGames = doc.DocumentNode.SelectNodes("//table[@class='user_game_list']//a")
-                .Where(node => !String.IsNullOrWhiteSpace(node.InnerText))
-                .Select(node =>
-                    new GameInfoModel()
-                    {
-                        Name = node.InnerText?.Trim(),
-                        HLTBGameID = node.Attributes["href"]?.Value.Split('=').Last()
-                    });
+            listGames.ItemsSource = await HLTBClient.GetCurrentGames();    
         }
     }
 }

@@ -4,13 +4,13 @@ using System.Text;
 
 namespace HLTBLogger.ViewModel
 {
-    public class GameInfoModel
+    public class GameInfo
     {
         public string Name { get; set; }
         public string HLTBGameID { get; set; }
         public string ImageUrl { get; set; }
 
-        public GameInfoModel()
+        public GameInfo()
         {
         }
 

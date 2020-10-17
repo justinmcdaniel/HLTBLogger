@@ -12,17 +12,53 @@ namespace HLTBLogger
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class LoginPage : ContentPage
     {
-        public LoginPage()
+        public LoginPage(bool showError = false)
         {
             InitializeComponent();
+
+            ErrMsg.IsVisible = showError;
         }
 
         async private void OnLoginButtonClicked(object sender, EventArgs e)
         {
-            var username = Username.Text.Trim();
+            var currentApp = App.Current as HLTBLogger.App;
 
-            Navigation.InsertPageBefore(new MainPage(username), this);
-            await Navigation.PopAsync();
+            SetErrorState(false);
+            BtnLogin.IsEnabled = false;
+
+            var username = Username.Text.Trim();
+            var password = Password.Text.Trim();
+
+            if (!String.IsNullOrEmpty(username) && !String.IsNullOrEmpty(password))
+            {
+                currentApp.HLTBUsername = username;
+                currentApp.HLTBPassword = password;
+
+                var result = await currentApp.HLTBClient.Login();
+                if (result)
+                {
+                    Navigation.InsertPageBefore(new MainPage(), this);
+                    await Navigation.PopAsync();
+                }
+                else
+                {
+                    SetErrorState(true);
+                    BtnLogin.IsEnabled = true;
+                }
+            }
+            else
+            {
+                SetErrorState(true);
+                BtnLogin.IsEnabled = true;
+            }
+
         }
+
+        private void SetErrorState(bool state)
+        {
+            ErrMsg.IsVisible = state;
+        }
+
+
     }
 }
