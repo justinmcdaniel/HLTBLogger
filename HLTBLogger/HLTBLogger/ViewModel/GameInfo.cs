@@ -1,6 +1,9 @@
-﻿using System;
+﻿using HtmlAgilityPack;
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using Xamarin.Forms;
 
 namespace HLTBLogger.ViewModel
 {
@@ -8,7 +11,7 @@ namespace HLTBLogger.ViewModel
     {
         public string Name { get; set; }
         public string HLTBGameID { get; set; }
-        public string ImageUrl { get; set; }
+        public Uri HLTBImageSourceUri { get; set; }
 
         public GameInfo()
         {
@@ -18,5 +21,11 @@ namespace HLTBLogger.ViewModel
         {
             return Name;
         }
+
+        private static readonly GameInfo empty = new GameInfo()
+        {
+            Name = "Loading..."
+        };
+        public static GameInfo Empty { get => empty; }
     }
 }

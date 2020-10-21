@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms" 
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="HLTBLogger.Controls.GameInfoView">
+  <ContentView.Content>
+      <StackLayout
+          Orientation="Horizontal">
+            <Image
+                HorizontalOptions="Center" VerticalOptions="Fill" Aspect="AspectFit"
+                BackgroundColor="Black"
+                Source="{Binding HLTBImageSourceUri}">
+            </Image>
+            <StackLayout
+                Orientation="Vertical"
+                HorizontalOptions="FillAndExpand">
+                <Label Text="{Binding Name}" 
+                   VerticalOptions="StartAndExpand"/>
+                
+                <Button x:Name="BtnStart"
+                        Clicked="BtnStart_Clicked"
+                        Text="Start"
+                        BackgroundColor="CornflowerBlue"
+                        HorizontalOptions="End"/>
+                <Frame x:Name="FrmTiming"
+                       IsVisible="false">
+                    <StackLayout
+                        Orientation="Vertical">
+                        <Label x:Name="LblTimer"/>
+                        <Button x:Name="BtnStop"
+                                Clicked="BtnStop_Clicked"
+                                Text="Stop" 
+                                BackgroundColor="CornflowerBlue"
+                                HorizontalOptions="End"/>
+                    </StackLayout>
+                </Frame>
+                <Frame x:Name="FrmSubmit"
+                       IsVisible="false">
+                    <StackLayout
+                        Orientation="Horizontal"
+                        HorizontalOptions="EndAndExpand">
+                        <Button x:Name="BtnReset"
+                                Clicked="BtnReset_Clicked" 
+                                Text="Reset"
+                                BackgroundColor="LightGray"
+                                HorizontalOptions="End"/>
+                        <Button x:Name="BtnSubmit"
+                                Clicked="BtnSubmit_Clicked"
+                                Text="Submit" 
+                                BackgroundColor="CornflowerBlue"
+                                HorizontalOptions="End"/>
+                    </StackLayout>
+                </Frame>
+                
+            </StackLayout>
+      </StackLayout>
+  </ContentView.Content>
+</ContentView>

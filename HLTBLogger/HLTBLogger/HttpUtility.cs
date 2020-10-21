@@ -6,6 +6,9 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
+using Xamarin.Forms;
+using System.IO;
+using Xamarin.Forms.Internals;
 
 namespace HLTBLogger
 {
@@ -27,7 +30,7 @@ namespace HLTBLogger
 
             Client = new HttpClient(HttpClientHandler)
             {
-                Timeout = new TimeSpan(0,0,5)
+                Timeout = new TimeSpan(0,0,20)
             };
         }
 
@@ -73,14 +76,51 @@ namespace HLTBLogger
             var doc = new HtmlDocument();
             doc.LoadHtml(content);
 
-            return doc.DocumentNode.SelectNodes("//table[@class='user_game_list']//a")
+            var result = doc.DocumentNode.SelectNodes("//table[@class='user_game_list']//a")
                 .Where(node => !String.IsNullOrWhiteSpace(node.InnerText))
                 .Select(node =>
                     new GameInfo()
                     {
                         Name = node.InnerText?.Trim(),
                         HLTBGameID = node.Attributes["href"]?.Value.Split('=').Last()
-                    });
+                    })
+                .ToList();
+
+            foreach (var gameInfo in result)
+            {
+                await this.loadGameInfoDetails(gameInfo);
+            }
+
+            return result;
+        }
+
+        private async Task loadGameInfoDetails(GameInfo gameInfo)
+        {
+            var response = await this.Client.GetAsync("https://howlongtobeat.com/game?id=" + gameInfo.HLTBGameID);
+            var content = await response.Content.ReadAsStringAsync();
+
+            var doc = new HtmlDocument();
+            doc.LoadHtml(content);
+
+            loadGameImage(gameInfo, doc);
+
+        }
+
+        private bool loadGameImage(GameInfo gameInfo, HtmlDocument doc)
+        {
+            var gameImgUrl = doc.DocumentNode
+                .SelectNodes("//div[contains(@class, 'game_image')]/img")
+                .Select(img => img.Attributes.Where(attr => attr.Name.ToLower().Contains("src")).FirstOrDefault()?.Value ?? String.Empty)
+                .FirstOrDefault();
+
+            if (!String.IsNullOrEmpty(gameImgUrl))
+            {
+                gameInfo.HLTBImageSourceUri = new Uri(gameImgUrl);
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

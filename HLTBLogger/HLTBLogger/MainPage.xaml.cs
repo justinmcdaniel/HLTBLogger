@@ -39,5 +39,6 @@ namespace HLTBLogger
 
             listGames.ItemsSource = await HLTBClient.GetCurrentGames();    
         }
+
     }
 }
