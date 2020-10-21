@@ -22,10 +22,12 @@
                         BackgroundColor="CornflowerBlue"
                         HorizontalOptions="End"/>
                 <Frame x:Name="FrmTiming"
-                       IsVisible="false">
+                       IsVisible="false"
+                       BackgroundColor="Transparent">
                     <StackLayout
                         Orientation="Vertical">
-                        <Label x:Name="LblTimer"/>
+                        <Label x:Name="LblTimer"
+                               TextColor="LawnGreen"/>
                         <Button x:Name="BtnStop"
                                 Clicked="BtnStop_Clicked"
                                 Text="Stop" 
@@ -34,7 +36,8 @@
                     </StackLayout>
                 </Frame>
                 <Frame x:Name="FrmSubmit"
-                       IsVisible="false">
+                       IsVisible="false"
+                       BackgroundColor="Transparent">
                     <StackLayout
                         Orientation="Horizontal"
                         HorizontalOptions="EndAndExpand">
