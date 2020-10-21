@@ -12,6 +12,7 @@ namespace HLTBLogger.ViewModel
         public string Name { get; set; }
         public string HLTBGameID { get; set; }
         public Uri HLTBImageSourceUri { get; set; }
+        public String EditUrl { get; set; }
 
         public GameInfo()
         {

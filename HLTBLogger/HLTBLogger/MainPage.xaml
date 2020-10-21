@@ -10,6 +10,7 @@
                 <DataTemplate>
                     <ViewCell>
                         <controls:GameInfoView
+                            GameInfo="{Binding}"
                             VerticalOptions="FillAndExpand"
                             HorizontalOptions="FillAndExpand"></controls:GameInfoView>
                     </ViewCell>

@@ -14,6 +14,13 @@ namespace HLTBLogger
 {
     public class HttpUtility
     {
+        public static readonly string SUBMIT_PROTIME_HOURS_KEY = "protime_h";
+        public static readonly string SUBMIT_PROTIME_MINUTES_KEY = "protime_m";
+        public static readonly string SUBMIT_PROTIME_SECONDS_KEY = "protime_s";
+        public static readonly string SUBMIT_COMPMONTH_KEY = "compmonth";
+        public static readonly string SUBMIT_COMPDAY_KEY = "compday";
+        public static readonly string SUBMIT_COMPYEAR_KEY = "compyear";
+
         public bool IsLoggedIn { get; private set; }
         private HttpClient Client;
         private HLTBLogger.App CurrentApp { get => App.Current as HLTBLogger.App; }
@@ -58,6 +65,67 @@ namespace HLTBLogger
             return IsLoggedIn;
         }
 
+        public async Task<bool> SubmitTime(GameInfo gameInfo, TimeSpan timeToAdd) 
+        {
+            //if (timeToAdd.TotalSeconds < 0)
+            //{
+            //    return true;
+            //}
+
+            var response = await Client.GetAsync("https://howlongtobeat.com/" + gameInfo.EditUrl);
+            var content = await response.Content.ReadAsStringAsync();
+
+            var doc = new HtmlDocument();
+            doc.LoadHtml(content);
+
+            var inputNodes = doc.DocumentNode.SelectNodes("//form[@name='submit_form']//input");
+            var selectNodes = doc.DocumentNode.SelectNodes("//select");
+
+            var payloadData = new Dictionary<string, string>();
+            foreach (var input in inputNodes)
+            {
+                if (input.Attributes["type"]?.Value.ToUpper() == "CHECKBOX")
+                {
+                    // Handle checkboxes by omitting if not checked.
+                    payloadData[input.Attributes["name"].Value] = input.Attributes["checked"] == null ? String.Empty : "1";
+                }
+                else
+                {
+                    payloadData[input.Attributes["name"].Value] = input.Attributes["value"]?.Value ?? String.Empty;
+                }
+            }
+            foreach (var select in selectNodes)
+            {
+                var payloadValue = String.Empty;
+                var payloadValueNodes = doc.DocumentNode.SelectNodes($"//select[@name='{select.Attributes["name"].Value}']//*[@selected='selected']")
+                    ?? doc.DocumentNode.SelectNodes($"//select[@name='{select.Attributes["name"].Value}']//option");
+                var payloadValueNode = payloadValueNodes == null ? default : payloadValueNodes.First();
+
+                if (payloadValueNode != default(HtmlNode))
+                {
+                    payloadValue = payloadValueNode.Attributes["value"]?.Value ?? String.Empty;
+                }
+
+                payloadData[select.Attributes["name"].Value] = payloadValue;
+            }
+
+            int hours = Convert.ToInt32(payloadData[HttpUtility.SUBMIT_PROTIME_HOURS_KEY]);
+            int minutes = Convert.ToInt32(payloadData[HttpUtility.SUBMIT_PROTIME_MINUTES_KEY]);
+            int seconds = Convert.ToInt32(payloadData[HttpUtility.SUBMIT_PROTIME_SECONDS_KEY]);
+            TimeSpan newPlayTime = new TimeSpan(hours, minutes, seconds) + timeToAdd;
+
+            payloadData[HttpUtility.SUBMIT_PROTIME_HOURS_KEY] = newPlayTime.Hours.ToString("0");
+            payloadData[HttpUtility.SUBMIT_PROTIME_MINUTES_KEY] = newPlayTime.Minutes.ToString("0");
+            payloadData[HttpUtility.SUBMIT_PROTIME_SECONDS_KEY] = newPlayTime.Seconds.ToString("0");
+
+            var body = new FormUrlEncodedContent(payloadData);
+            var submitPostResponse = await Client.PostAsync("https://howlongtobeat.com/submit", body);
+            var submitPostContent = await submitPostResponse.Content.ReadAsStringAsync();
+            
+
+            return true;
+        }
+
         public async Task<IEnumerable<GameInfo>> GetCurrentGames()
         {
             var currentApp = (App.Current as HLTBLogger.App);
@@ -76,22 +144,44 @@ namespace HLTBLogger
             var doc = new HtmlDocument();
             doc.LoadHtml(content);
 
-            var result = doc.DocumentNode.SelectNodes("//table[@class='user_game_list']//a")
-                .Where(node => !String.IsNullOrWhiteSpace(node.InnerText))
-                .Select(node =>
-                    new GameInfo()
-                    {
-                        Name = node.InnerText?.Trim(),
-                        HLTBGameID = node.Attributes["href"]?.Value.Split('=').Last()
-                    })
+            var gameInfoTBodyNodes = doc.DocumentNode.SelectNodes("//table[@class='user_game_list']/tbody")
                 .ToList();
 
-            foreach (var gameInfo in result)
+            var result = new List<GameInfo>();
+
+            foreach (var tbodyNode in gameInfoTBodyNodes)
             {
+                var gameInfo = new GameInfo();
+                result.Add(gameInfo);
+
+                this.extractNameAndHLTBGameID(gameInfo, tbodyNode);
+                this.extractEditUrl(gameInfo, tbodyNode);
                 await this.loadGameInfoDetails(gameInfo);
             }
 
             return result;
+        }
+
+        private void extractNameAndHLTBGameID(GameInfo gameInfo, HtmlNode tbodyNode)
+        {
+            var titleNode = tbodyNode.SelectNodes("tr/td/a")
+                        .Where(node => !String.IsNullOrWhiteSpace(node.InnerText))
+                        .FirstOrDefault();
+
+            if (titleNode != default(HtmlNode))
+            {
+                gameInfo.Name = titleNode.InnerText?.Trim();
+                gameInfo.HLTBGameID = titleNode.Attributes["href"]?.Value.Split('=').Last();
+            }
+        }
+
+        private void extractEditUrl(GameInfo gameInfo, HtmlNode tbodyNode)
+        {
+            var editNode = tbodyNode.SelectNodes("tr/td/a[@title='Edit']").FirstOrDefault();
+            if (editNode != default(HtmlNode))
+            {
+                gameInfo.EditUrl = editNode.Attributes["href"]?.Value;
+            }
         }
 
         private async Task loadGameInfoDetails(GameInfo gameInfo)

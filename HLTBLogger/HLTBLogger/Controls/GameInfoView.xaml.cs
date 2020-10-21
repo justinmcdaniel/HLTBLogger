@@ -1,6 +1,7 @@
 ﻿using HLTBLogger.ViewModel;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Timers;
 using Xamarin.Essentials;
@@ -83,16 +84,17 @@ namespace HLTBLogger.Controls
             resetForm();
         }
 
-        private void BtnSubmit_Clicked(object sender, EventArgs e)
+        private async void BtnSubmit_Clicked(object sender, EventArgs e)
         {
-            // TODO: Submit time
-            
+            var HLTBClient = (App.Current as HLTBLogger.App).HLTBClient;
+            await HLTBClient.SubmitTime(this.GameInfo, stopwatch.Elapsed);
+
             resetForm();
         }
 
         private void Stopwatch_UpdateUITimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            Device.BeginInvokeOnMainThread(() => LblTimer.Text = Convert.ToString(stopwatch.Elapsed));
+            Device.BeginInvokeOnMainThread(() => LblTimer.Text = stopwatch.Elapsed.ToString(@"hh\:mm\:ss"));
         }
     }
 }
