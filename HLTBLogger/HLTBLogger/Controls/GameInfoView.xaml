@@ -6,9 +6,9 @@
       <StackLayout
           Orientation="Horizontal">
             <Image
+                x:Name="ImgHLTBGameImage"
                 HorizontalOptions="Center" VerticalOptions="Fill" Aspect="AspectFit"
-                BackgroundColor="Black"
-                Source="{Binding HLTBImageSourceUri}">
+                BackgroundColor="Black">
             </Image>
             <StackLayout
                 Orientation="Vertical"

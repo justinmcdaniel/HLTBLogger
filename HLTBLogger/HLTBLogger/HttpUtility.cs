@@ -162,6 +162,12 @@ namespace HLTBLogger
             return result;
         }
 
+        public async Task<ImageSource> GetImageFromUri(Uri imageUri)
+        {
+            System.IO.Stream imagestream = await this.Client.GetStreamAsync(imageUri);
+            return ImageSource.FromStream(() => imagestream);
+        }
+
         private void extractNameAndHLTBGameID(GameInfo gameInfo, HtmlNode tbodyNode)
         {
             var titleNode = tbodyNode.SelectNodes("tr/td/a")

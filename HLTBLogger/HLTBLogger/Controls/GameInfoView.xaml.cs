@@ -2,7 +2,9 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Timers;
 using Xamarin.Essentials;
 using Xamarin.Forms;
@@ -20,6 +22,7 @@ namespace HLTBLogger.Controls
     [XamlCompilation(XamlCompilationOptions.Compile)]
     public partial class GameInfoView : ContentView
     {
+        private HLTBLogger.App appRef;
 
         private Stopwatch stopwatch;
         private Timer stopwatch_UpdateUITimer;
@@ -28,6 +31,8 @@ namespace HLTBLogger.Controls
         {
             InitializeComponent();
 
+            appRef = App.Current as HLTBLogger.App;
+
             stopwatch = new Stopwatch();
             stopwatch_UpdateUITimer = new Timer(500)
             {
@@ -35,6 +40,20 @@ namespace HLTBLogger.Controls
                 Enabled = false
             };
             stopwatch_UpdateUITimer.Elapsed += Stopwatch_UpdateUITimer_Elapsed;
+
+            this.PropertyChanged += GameInfoView_PropertyChanged;
+        }
+
+        private async void GameInfoView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(GameInfo))
+            {
+                if (GameInfo != null && GameInfo.HLTBImageSourceUri != null)
+                {
+                    var image = await appRef.HLTBClient.GetImageFromUri(GameInfo.HLTBImageSourceUri);
+                    Device.BeginInvokeOnMainThread(() => ImgHLTBGameImage.Source = image);
+                }
+            }
         }
 
         public static readonly BindableProperty GameInfoProperty = BindableProperty.Create(
@@ -42,6 +61,8 @@ namespace HLTBLogger.Controls
             typeof(GameInfo),     // the bindable property type
             typeof(GameInfoView),   // the parent object type
             GameInfo.Empty);
+
+        
 
         public GameInfo GameInfo
         {
@@ -86,7 +107,7 @@ namespace HLTBLogger.Controls
 
         private async void BtnSubmit_Clicked(object sender, EventArgs e)
         {
-            var HLTBClient = (App.Current as HLTBLogger.App).HLTBClient;
+            var HLTBClient = appRef.HLTBClient;
             await HLTBClient.SubmitTime(this.GameInfo, stopwatch.Elapsed);
 
             resetForm();
