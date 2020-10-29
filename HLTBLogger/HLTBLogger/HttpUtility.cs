@@ -7,8 +7,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Linq;
 using Xamarin.Forms;
-using System.IO;
-using Xamarin.Forms.Internals;
+using HLTBLogger.Utility;
 
 namespace HLTBLogger
 {
@@ -109,9 +108,9 @@ namespace HLTBLogger
                 payloadData[select.Attributes["name"].Value] = payloadValue;
             }
 
-            int hours = Convert.ToInt32(payloadData[HttpUtility.SUBMIT_PROTIME_HOURS_KEY]);
-            int minutes = Convert.ToInt32(payloadData[HttpUtility.SUBMIT_PROTIME_MINUTES_KEY]);
-            int seconds = Convert.ToInt32(payloadData[HttpUtility.SUBMIT_PROTIME_SECONDS_KEY]);
+            int hours = Convert.ToInt32(payloadData[HttpUtility.SUBMIT_PROTIME_HOURS_KEY].ZeroIfEmpty());
+            int minutes = Convert.ToInt32(payloadData[HttpUtility.SUBMIT_PROTIME_MINUTES_KEY].ZeroIfEmpty());
+            int seconds = Convert.ToInt32(payloadData[HttpUtility.SUBMIT_PROTIME_SECONDS_KEY].ZeroIfEmpty());
             TimeSpan newPlayTime = new TimeSpan(hours, minutes, seconds) + timeToAdd;
 
             payloadData[HttpUtility.SUBMIT_PROTIME_HOURS_KEY] = newPlayTime.Hours.ToString("0");

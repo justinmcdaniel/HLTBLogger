@@ -1,12 +1,7 @@
-﻿using HLTBLogger.ViewModel;
+﻿using HLTBLogger.Utility;
+using HLTBLogger.ViewModel;
 using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net;
 using System.Timers;
-using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -23,22 +18,19 @@ namespace HLTBLogger.Controls
     public partial class GameInfoView : ContentView
     {
         private HLTBLogger.App appRef;
+        private StopWatch stopWatch = new StopWatch();
 
-        private Stopwatch stopwatch;
-        private Timer stopwatch_UpdateUITimer;
+        private Timer stopwatch_UpdateUITimer = new Timer(500)
+        {
+            AutoReset = true,
+            Enabled = false
+        };
 
         public GameInfoView()
         {
             InitializeComponent();
 
             appRef = App.Current as HLTBLogger.App;
-
-            stopwatch = new Stopwatch();
-            stopwatch_UpdateUITimer = new Timer(500)
-            {
-                AutoReset = true,
-                Enabled = false
-            };
             stopwatch_UpdateUITimer.Elapsed += Stopwatch_UpdateUITimer_Elapsed;
 
             this.PropertyChanged += GameInfoView_PropertyChanged;
@@ -72,7 +64,7 @@ namespace HLTBLogger.Controls
 
         private void resetForm()
         {
-            stopwatch.Reset();
+            stopWatch.Reset();
             Stopwatch_UpdateUITimer_Elapsed(this, null);
 
             BtnStart.IsVisible = true;
@@ -85,13 +77,14 @@ namespace HLTBLogger.Controls
             BtnStart.IsVisible = false;
             FrmTiming.IsVisible = true;
 
-            stopwatch.Start();
+
+            stopWatch.Start();
             stopwatch_UpdateUITimer.Enabled = true;
         }
 
         private void BtnStop_Clicked(object sender, EventArgs e)
         {
-            stopwatch.Stop();
+            stopWatch.Stop();
 
             FrmTiming.IsVisible = false;
             FrmSubmit.IsVisible = true;
@@ -108,14 +101,14 @@ namespace HLTBLogger.Controls
         private async void BtnSubmit_Clicked(object sender, EventArgs e)
         {
             var HLTBClient = appRef.HLTBClient;
-            await HLTBClient.SubmitTime(this.GameInfo, stopwatch.Elapsed);
+            await HLTBClient.SubmitTime(this.GameInfo, stopWatch.Elapsed);
 
             resetForm();
         }
 
         private void Stopwatch_UpdateUITimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            Device.BeginInvokeOnMainThread(() => LblTimer.Text = stopwatch.Elapsed.ToString(@"hh\:mm\:ss"));
+            Device.BeginInvokeOnMainThread(() => LblTimer.Text = stopWatch.Elapsed.ToString(@"hh\:mm\:ss"));
         }
     }
 }

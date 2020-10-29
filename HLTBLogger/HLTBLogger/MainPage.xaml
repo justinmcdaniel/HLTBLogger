@@ -5,7 +5,8 @@
              x:Class="HLTBLogger.MainPage">
     <StackLayout Margin="20,35,20,20">
         <ListView x:Name="listGames"
-                  RowHeight="100">
+                  RowHeight="100"
+                  SelectionMode="None">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
